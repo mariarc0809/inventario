@@ -21,8 +21,9 @@ const esc = (s) =>
   String(s ?? "").replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+// Formato peso colombiano (COP): sin centavos, miles con punto -> "$1.500"
 const money = (v) =>
-  "$" + Number(v || 0).toLocaleString("es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  "$" + Number(v || 0).toLocaleString("es-CO", { maximumFractionDigits: 0 });
 
 const fechaCorta = (iso) =>
   new Date(iso).toLocaleString("es-CO", {

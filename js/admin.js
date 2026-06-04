@@ -95,7 +95,7 @@
   function llenarSelectCategoria() {
     const sel = $("#producto-categoria");
     const actual = sel.value;
-    sel.innerHTML = '<option value="">— Sin categoría —</option>' +
+    sel.innerHTML = '<option value="" disabled selected>— Selecciona —</option>' +
       categorias.map((c) => `<option value="${c.id}">${esc(c.nombre)}</option>`).join("");
     sel.value = actual;
   }
@@ -278,6 +278,7 @@
     $("#producto-activo").checked = p.activo;
     $("#producto-categoria").value = p.categoria_id || "";
     imagenProducto = p.imagen || null;
+    $("#producto-imagen").required = false;
     const prevImg = $("#producto-imagen-preview");
     if (p.imagen) { prevImg.src = p.imagen; prevImg.hidden = false; }
     else { prevImg.hidden = true; prevImg.removeAttribute("src"); }
@@ -316,6 +317,7 @@
     $("#form-producto").reset();
     $("#producto-id").value = "";
     $("#producto-activo").checked = true;
+    $("#producto-imagen").required = true;
     imagenProducto = null;
     $("#producto-imagen-preview").hidden = true;
     $("#producto-imagen-preview").removeAttribute("src");

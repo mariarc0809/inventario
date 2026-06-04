@@ -101,23 +101,23 @@
                 <input type="text" id="producto-descripcion" required maxlength="250" />
               </label>
               <div class="fila">
-                <label>Precio *
-                  <input type="number" id="producto-precio" min="0" step="0.01" required />
+                <label>Precio (COP) *
+                  <input type="number" id="producto-precio" min="0" step="1" required />
                 </label>
                 <label>Categoría *
                   <select id="producto-categoria" required><option value="" disabled selected>— Selecciona —</option></select>
                 </label>
               </div>
               <div class="fila">
-                <label>Stock inicial
-                  <input type="number" id="producto-stock" min="0" step="1" value="0" />
+                <label>Stock inicial *
+                  <input type="number" id="producto-stock" min="0" step="1" required />
                 </label>
-                <label>Stock mínimo
-                  <input type="number" id="producto-stock-minimo" min="0" step="1" value="5" />
+                <label>Stock mínimo *
+                  <input type="number" id="producto-stock-minimo" min="0" step="1" required />
                 </label>
               </div>
               <label class="check"><input type="checkbox" id="producto-activo" checked /> Visible en la tienda</label>
-              <label>Imagen del producto (desde tu PC)
+              <label>Imagen del producto (desde tu PC) *
                 <input type="file" id="producto-imagen" accept="image/*" />
               </label>
               <img id="producto-imagen-preview" class="img-preview" hidden alt="Vista previa" />
@@ -161,8 +161,8 @@
               <label>Nombre *
                 <input type="text" id="categoria-nombre" required maxlength="80" />
               </label>
-              <label>Descripción
-                <input type="text" id="categoria-descripcion" maxlength="200" />
+              <label>Descripción *
+                <input type="text" id="categoria-descripcion" required maxlength="200" />
               </label>
               <div class="acciones">
                 <button type="submit" class="btn primario">Guardar</button>
@@ -213,8 +213,8 @@
                   <input type="number" id="movimiento-cantidad" min="1" step="1" value="1" required />
                 </label>
               </div>
-              <label>Motivo
-                <input type="text" id="movimiento-motivo" maxlength="200" placeholder="Compra, ajuste…" />
+              <label>Motivo *
+                <input type="text" id="movimiento-motivo" required maxlength="200" placeholder="Compra, ajuste…" />
               </label>
               <div class="acciones">
                 <button type="submit" class="btn primario">Registrar</button>
