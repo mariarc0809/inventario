@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventario & Ventas</title>
+  <link rel="icon" href="data:," />
+  <script>
+    // Carga el CSS siempre fresco (evita problemas de caché del navegador)
+    document.write('<link rel="stylesheet" href="css/styles.css?v=' + Date.now() + '">');
+  </script>
+</head>
+<body>
+
+  <!-- ===================== BARRA SUPERIOR ===================== -->
+  <header id="topbar" class="topbar" hidden>
+    <div class="brand">📦 Inventario &amp; Ventas</div>
+    <div class="user-box">
+      <span id="user-info"></span>
+      <span id="rol-badge" class="rol-badge"></span>
+      <button id="btn-logout" class="btn">Salir</button>
+    </div>
+  </header>
+
+  <!-- ===================== VISTA: LOGIN / REGISTRO ===================== -->
+  <section id="vista-auth" class="vista-auth">
+    <div class="auth-card">
+      <h1>📦 Inventario &amp; Ventas</h1>
+      <p class="auth-sub">Inicia sesión para continuar</p>
+
+      <div class="auth-tabs">
+        <button class="auth-tab activo" data-modo="login">Iniciar sesión</button>
+        <button class="auth-tab" data-modo="registro">Registrarse</button>
+      </div>
+
+      <form id="form-auth">
+        <label id="campo-nombre" hidden>Nombre
+          <input type="text" id="auth-nombre" autocomplete="name" />
+        </label>
+        <label>Correo
+          <input type="email" id="auth-email" autocomplete="email" required />
+        </label>
+        <label>Contraseña
+          <input type="password" id="auth-password" autocomplete="current-password" required minlength="6" />
+        </label>
+        <button type="submit" id="btn-auth" class="btn primario ancho">Entrar</button>
+      </form>
+
+      <p id="auth-msg" class="auth-msg"></p>
+    </div>
+  </section>
+
+  <!-- ===================== VISTA: ADMIN ===================== -->
+  <main id="vista-admin" class="contenedor" hidden>
+    <div id="alertas-container" class="alertas" hidden></div>
+
+    <nav class="tabs">
+      <button class="tab-btn activo" data-tab="a-productos">Productos</button>
+      <button class="tab-btn" data-tab="a-categorias">Categorías</button>
+      <button class="tab-btn" data-tab="a-movimientos">Entradas / Salidas</button>
+      <button class="tab-btn" data-tab="a-ventas">Ventas</button>
+    </nav>
+
+    <!-- ----- Productos ----- -->
+    <section id="tab-a-productos" class="tab-panel activo">
+      <div class="card">
+        <div class="card-head">
+          <h2>Productos</h2>
+          <div class="head-acciones">
+            <input type="search" id="buscar-producto" placeholder="🔍 Buscar por nombre…" />
+            <button type="button" class="btn primario" data-abrir="producto">+ Agregar producto</button>
+          </div>
+        </div>
+        <div class="tabla-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th><th>Nombre</th><th>Categoría</th>
+                <th class="num">Precio</th><th class="num">Stock</th><th class="num">Mín.</th>
+                <th>Estado</th><th>Tienda</th><th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="productos-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="form-modal-producto" class="modal-form" hidden>
+        <div class="modal-card">
+          <div class="modal-head">
+            <h2 id="titulo-form-producto">Agregar producto</h2>
+            <button type="button" class="btn-mini" data-cerrar="producto">✕</button>
+          </div>
+          <div class="modal-cuerpo">
+            <form id="form-producto">
+              <input type="hidden" id="producto-id" />
+              <label>Nombre *
+                <input type="text" id="producto-nombre" required maxlength="120" />
+              </label>
+              <label>Descripción *
+                <input type="text" id="producto-descripcion" required maxlength="250" />
+              </label>
+              <div class="fila">
+                <label>Precio *
+                  <input type="number" id="producto-precio" min="0" step="0.01" required />
+                </label>
+                <label>Categoría *
+                  <select id="producto-categoria" required><option value="" disabled selected>— Selecciona —</option></select>
+                </label>
+              </div>
+              <div class="fila">
+                <label>Stock inicial
+                  <input type="number" id="producto-stock" min="0" step="1" value="0" />
+                </label>
+                <label>Stock mínimo
+                  <input type="number" id="producto-stock-minimo" min="0" step="1" value="5" />
+                </label>
+              </div>
+              <label class="check"><input type="checkbox" id="producto-activo" checked /> Visible en la tienda</label>
+              <label>Imagen del producto (desde tu PC)
+                <input type="file" id="producto-imagen" accept="image/*" />
+              </label>
+              <img id="producto-imagen-preview" class="img-preview" hidden alt="Vista previa" />
+              <p id="nota-stock" class="nota" hidden>El stock se ajusta con entradas/salidas.</p>
+              <div class="acciones">
+                <button type="submit" class="btn primario">Guardar</button>
+                <button type="button" id="btn-cancelar-producto" class="btn" data-cerrar="producto">Cancelar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----- Categorías ----- -->
+    <section id="tab-a-categorias" class="tab-panel">
+      <div class="card">
+        <div class="card-head">
+          <h2>Categorías</h2>
+          <div class="head-acciones">
+            <button type="button" class="btn primario" data-abrir="categoria">+ Crear categoría</button>
+          </div>
+        </div>
+        <div class="tabla-scroll">
+          <table>
+            <thead><tr><th>ID</th><th>Nombre</th><th>Descripción</th><th class="num">Productos</th><th>Acciones</th></tr></thead>
+            <tbody id="categorias-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="form-modal-categoria" class="modal-form" hidden>
+        <div class="modal-card">
+          <div class="modal-head">
+            <h2 id="titulo-form-categoria">Crear categoría</h2>
+            <button type="button" class="btn-mini" data-cerrar="categoria">✕</button>
+          </div>
+          <div class="modal-cuerpo">
+            <form id="form-categoria">
+              <input type="hidden" id="categoria-id" />
+              <label>Nombre *
+                <input type="text" id="categoria-nombre" required maxlength="80" />
+              </label>
+              <label>Descripción
+                <input type="text" id="categoria-descripcion" maxlength="200" />
+              </label>
+              <div class="acciones">
+                <button type="submit" class="btn primario">Guardar</button>
+                <button type="button" id="btn-cancelar-categoria" class="btn" data-cerrar="categoria">Cancelar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----- Movimientos ----- -->
+    <section id="tab-a-movimientos" class="tab-panel">
+      <div class="card">
+        <div class="card-head">
+          <h2>Historial de movimientos</h2>
+          <div class="head-acciones">
+            <button type="button" class="btn primario" data-abrir="movimiento">+ Registrar entrada / salida</button>
+          </div>
+        </div>
+        <div class="tabla-scroll">
+          <table>
+            <thead><tr><th>ID</th><th>Fecha</th><th>Producto</th><th>Tipo</th><th class="num">Cant.</th><th>Motivo</th></tr></thead>
+            <tbody id="movimientos-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="form-modal-movimiento" class="modal-form" hidden>
+        <div class="modal-card">
+          <div class="modal-head">
+            <h2>Registrar entrada / salida</h2>
+            <button type="button" class="btn-mini" data-cerrar="movimiento">✕</button>
+          </div>
+          <div class="modal-cuerpo">
+            <form id="form-movimiento">
+              <label>Producto *
+                <select id="movimiento-producto" required><option value="">— Selecciona —</option></select>
+              </label>
+              <div class="fila">
+                <label>Tipo *
+                  <select id="movimiento-tipo" required>
+                    <option value="entrada">Entrada (+)</option>
+                    <option value="salida">Salida (−)</option>
+                  </select>
+                </label>
+                <label>Cantidad *
+                  <input type="number" id="movimiento-cantidad" min="1" step="1" value="1" required />
+                </label>
+              </div>
+              <label>Motivo
+                <input type="text" id="movimiento-motivo" maxlength="200" placeholder="Compra, ajuste…" />
+              </label>
+              <div class="acciones">
+                <button type="submit" class="btn primario">Registrar</button>
+                <button type="button" class="btn" data-cerrar="movimiento">Cancelar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----- Ventas (admin) ----- -->
+    <section id="tab-a-ventas" class="tab-panel">
+      <div class="card">
+        <div class="card-head"><h2>Todas las ventas</h2><button id="btn-refrescar-ventas" class="btn">↻ Actualizar</button></div>
+        <div class="tabla-scroll">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Fecha</th><th>Cliente</th><th class="num">Total</th><th>Estado</th><th>Detalle</th></tr>
+            </thead>
+            <tbody id="ventas-admin-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== VISTA: TIENDA (cliente) ===================== -->
+  <main id="vista-tienda" class="contenedor" hidden>
+    <nav class="tabs">
+      <button class="tab-btn activo" data-tab="t-catalogo">Catálogo</button>
+      <button class="tab-btn" data-tab="t-pedidos">Mis pedidos</button>
+    </nav>
+
+    <section id="tab-t-catalogo" class="tab-panel activo">
+      <div class="catalogo-head">
+        <input type="search" id="buscar-catalogo" placeholder="🔍 Buscar producto…" />
+        <button id="btn-carrito" class="btn primario">🛒 Carrito (<span id="carrito-count">0</span>)</button>
+      </div>
+      <div id="catalogo-grid" class="catalogo-grid"></div>
+    </section>
+
+    <section id="tab-t-pedidos" class="tab-panel">
+      <div class="card">
+        <div class="card-head"><h2>Mis pedidos</h2><button id="btn-refrescar-pedidos" class="btn">↻ Actualizar</button></div>
+        <div id="pedidos-lista"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== CARRITO ===================== -->
+  <aside id="carrito-panel" class="carrito-panel" hidden>
+    <div class="carrito-head">
+      <h2>🛒 Tu carrito</h2>
+      <button id="btn-cerrar-carrito" class="btn-mini">✕</button>
+    </div>
+    <div id="carrito-items" class="carrito-items"></div>
+    <div class="carrito-footer">
+      <div class="carrito-total">Total: <strong id="carrito-total">$0,00</strong></div>
+      <button id="btn-comprar" class="btn primario ancho">Comprar</button>
+    </div>
+  </aside>
+
+  <!-- Modal genérico (detalle de venta / pedido) -->
+  <div id="modal" class="modal" hidden>
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="modal-titulo"></h2>
+        <button id="modal-cerrar" class="btn-mini">✕</button>
+      </div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="overlay" class="overlay" hidden></div>
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Carga los scripts locales en orden y siempre frescos (sin caché vieja)
+    (function () {
+      var v = '?v=' + Date.now();
+      ['js/config.js', 'js/admin.js', 'js/tienda.js', 'js/app.js'].forEach(function (src) {
+        document.write('<script src="' + src + v + '"><\/script>');
+      });
+    })();
+  </script>
+</body>
+</html>
